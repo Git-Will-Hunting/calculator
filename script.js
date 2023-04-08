@@ -65,13 +65,15 @@ function power(num1, num2){
 
 function divide(num1, num2){
     if (num1 === undefined || num2 === undefined) {
-        return NaN;
+        console.error('divide function requires two numbers');
+        return ;
     }
     if (typeof num1 !== 'number' || typeof num2 !== 'number') {
         return NaN;
     }
     if (num2 === 0) {
-        return NaN;
+        console.error('cannot divide by zero');
+        return;
     }
     return num1 / num2;
 }
@@ -102,6 +104,9 @@ function operate(operator){
 }
 
 function updateNum() {
+    if (displayBottom.textContent === '') {
+        return;
+    }
     num.push(parseFloat(displayBottom.textContent));
     num.reverse();
     num.pop();
