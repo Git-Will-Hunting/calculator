@@ -48,18 +48,3 @@ body {
     padding: 5px;
     margin: 10px;
 }
-.calcDisplayTop {
-    font-size: 1.5em;
-    font-weight: normal;
-    color: #000;
-    text-align: right;
-    margin-top: -5px;
-}
-
-.calcDisplayBottom {
-    font-size: 1.5em;
-    font-weight: normal;
-    color: #000;
-    text-align: right;
-    
-}
