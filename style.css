@@ -11,7 +11,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #a5f5ff;
+    background-color: #5b5fa0;
     padding: 20px;
     flex: 0.6;
 }
@@ -47,4 +47,23 @@ body {
     text-align: right;
     padding: 5px;
     margin: 10px;
+}
+.calcOp, .negative, .percent {
+    background-color: #ffee15;
+}
+.equals {
+    background-color: #00ff00;
+}
+.clear {
+    background-color: #ff0000;
+}
+.number {
+    background-color: #00aaff;
+}
+.decimal {
+    background-color: #ff6f00;
+}
+.calcButton:hover {
+    background-color: #555;
+    color: #fff;
 }
