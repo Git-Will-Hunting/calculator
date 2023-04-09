@@ -120,6 +120,10 @@ function inputNumber(number) {
     }
 }
 function inputOperator(operator) {
+    // check if the last button pressed was an operator
+    // if it was, repeat the last operator and use the last number entered
+    if (operator === lastButton) {
+    }
     lastButton = operator;
     // check if there is an operator
     if (firstOperator != null && secondOperator === null) {
@@ -144,6 +148,7 @@ function inputOperator(operator) {
 
 // handle equals button
 function equals() {
+    
     if (firstOperator === null) {
         displayValue = displayValue;
     } else if (secondOperator != null) {
