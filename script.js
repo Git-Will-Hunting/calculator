@@ -1,14 +1,18 @@
 // gather UI elements
 const buttons = document.querySelectorAll('.calcButton');
+const calcDisplay = document.querySelector('.calcDisplay');
 
 // set global variables for math functions
 let displayValue = 0;
-let firstNumber= null;
-let secondNumber = null;
+let firstOperand= null;
+let secondOperand = null;
 let firstOperator = null;
 let secondOperator = null;
 let result = null;
-let lastButton = null;
+let lastOp = null;
+let lastButtonEquals = false;
+let lastNumber = null;
+let midOperation = false;
 
 
 // math functions
@@ -82,6 +86,7 @@ function divide(num1, num2){
 
 // operator function to run the calculator
 function operate(num1, num2, operator){
+    midOperation = true;
     switch (operator) {
         case '+':
             return add(num1, num2);
@@ -102,17 +107,14 @@ function operate(num1, num2, operator){
 }
 
 function inputNumber(number) {
-    // check if there is an operator
-    if (firstOperator === null) {
-        if (displayValue === '0' || displayValue === 0) {
-            displayValue = number;
-        } else if (displayValue === firstNumber) {
-            displayValue = number;
-        } else {
-            displayValue += number;
-        }
+    // set last button equals to false
+    lastButtonEquals = false;
+    // check if mid operation
+    if (midOperation === true) {
+        displayValue = number;
+        midOperation = false;
     } else {
-        if (displayValue === firstNumber) { 
+        if (displayValue === '0' || displayValue === 0) {
             displayValue = number;
         } else {
             displayValue += number;
@@ -120,80 +122,100 @@ function inputNumber(number) {
     }
 }
 function inputOperator(operator) {
-    // check if the last button pressed was an operator
-    // if it was, repeat the last operator and use the last number entered
-    //if (operator === lastButton) {
-    //}
-    lastButton = operator;
-    // check if there is an operator
-    if (firstOperator != null && secondOperator === null) {
-        secondOperator = operator;
-        secondNumber = displayValue;
-        result = operate(Number(firstNumber), Number(secondNumber), firstOperator);
-        displayValue = roundAccurately(result, 10).toString();
-        firstNumber = displayValue;
-        result = null;
-    } else if (firstOperator != null && secondOperator != null) {
-        secondNumber = displayValue;
-        result = operate(Number(firstNumber), Number(secondNumber), secondOperator);
-        secondOperator = operator;
-        displayValue = roundAccurately(result, 10).toString();
-        firstNumber = displayValue;
-        result = null;
-    } else {
+    // set last button equals to false
+    lastButtonEquals = false;
+    // check if mid operation
+    if (midOperation === true) {
         firstOperator = operator;
-        firstNumber = displayValue;
+    } else {
+        // check if there is an operator
+        if (firstOperator != null && secondOperator === null) {
+            secondOperator = operator;
+            secondOperand = displayValue;
+            lastNumber = secondOperand;
+            result = operate(Number(firstOperand), Number(secondOperand), firstOperator);
+            displayValue = roundAccurately(result,10).toString();
+            firstOperand = displayValue;
+            result = null;
+            midOperation = true;
+        } else if (firstOperator != null && secondOperator != null) {
+            secondOperand = displayValue;
+            lastNumber = secondOperand;
+            result = operate(Number(firstOperand), Number(secondOperand), secondOperator);
+            secondOperator = operator;
+            displayValue = roundAccurately(result,10).toString();
+            firstOperand = displayValue;
+            result = null;
+            midOperation = true;
+        } else {
+            firstOperator = operator;
+            firstOperand = displayValue;
+            midOperation = true;
+        }
     }
+    lastOp = operator;
 }
 
 // handle equals button
 function equals() {
-    
-    if (firstOperator === null) {
+    // if last button is an operator, repeat the operation
+    if (lastButtonEquals) {
+        firstOperand = operate(Number(firstOperand), Number(lastNumber), lastOp);
+        displayValue = roundAccurately(firstOperand, 10).toString();
+        secondOperand = null;
+
+    }
+    else if (firstOperator === null) {
         displayValue = displayValue;
     } else if (secondOperator != null) {
-        secondNumber = displayValue;
-        result = operate(Number(firstNumber), Number(secondNumber), secondOperator);
+        secondOperand = displayValue;
+        lastNumber = secondOperand;
+        result = operate(Number(firstOperand), Number(secondOperand), secondOperator);
         if (result === 'nuh-uh') {
             displayValue = 'nuh-uh'
         } else {
             displayValue = roundAccurately(result, 10).toString();
-            firstNumber = displayValue;
-            secondNumber = null;
+            firstOperand = displayValue;
+            secondOperand = null;
             firstOperator = null;
             secondOperator = null;
             result = null;
         }
     } else {
-        secondNumber = displayValue;
-        result = operate(Number(firstNumber), Number(secondNumber), firstOperator);
+        secondOperand = displayValue;
+        lastNumber = secondOperand;
+        result = operate(Number(firstOperand), Number(secondOperand), firstOperator);
         if (result === 'nuh-uh') {
             displayValue = 'nuh-uh';
         } else {
             displayValue = roundAccurately(result, 10).toString();
-            firstNumber = displayValue;
-            secondNumber = null;
+            firstOperand = displayValue;
+            secondOperand = null;
             firstOperator = null;
             secondOperator = null;
             result = null;
         }
     }
+    lastButtonEquals = true; 
 }
 
 function allClear() {
     displayValue = '0';
-    firstNumber = null;
-    secondNumber = null;
+    firstOperand = null;
+    secondOperand = null;
     firstOperator = null;
     secondOperator = null;
     result = null;
+    midOperation = false;
+    lastButtonEquals = false;
+    lastNumber = null;
 }
 
 // handle negative button
 function negative() {
     if (displayValue === '0' || displayValue === 0) {
         displayValue = '-';
-    } else if (displayValue === firstNumber) {
+    } else if (displayValue === firstOperand) {
         displayValue = '-';
     } else if (displayValue.includes('-')) {
         displayValue = displayValue.replace('-', '');
@@ -206,7 +228,7 @@ function negative() {
 function decimal() {
     if (displayValue === '0' || displayValue === 0) {
         displayValue = '0.';
-    } else if (displayValue === firstNumber) {
+    } else if (displayValue === firstOperand) {
         displayValue = '0.';
     } else if (displayValue.includes('.')) {
         displayValue = displayValue;
@@ -219,8 +241,6 @@ function decimal() {
 function percent() {
     if (displayValue === '0' || displayValue === 0) {
         displayValue = '0';
-    } else if (displayValue === firstNumber) {
-        displayValue = '0';
     } else {
         displayValue = (Number(displayValue) / 100).toString();
     }
@@ -228,7 +248,7 @@ function percent() {
 
 // update the display
 function updateDisplay() {
-    const calcDisplay = document.querySelector('.calcDisplay');
+    
     calcDisplay.textContent = displayValue;
     if (displayValue.length > 10) {
         calcDisplay.textContent = displayValue.substring(0, 10)
